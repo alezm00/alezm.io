@@ -1,0 +1,194 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+
+* {
+	--hex-main-background: #2d3436;
+	--hex-main-color: #dfe6e9;
+
+}
+
+
+
+
+body {
+
+	background: var(--hex-main-background);
+	color: var(--hex-main-color);
+
+	font-family: 'Lato', sans-serif;
+
+}
+
+img {
+	filter: invert(100%) sepia(41%) saturate(754%) hue-rotate(260deg) brightness(118%) contrast(106%);
+}
+
+
+
+
+#main {
+
+	height: 100vh;
+	overflow: hidden;
+
+
+
+
+	
+}
+
+
+#main>div {
+	text-align: center;
+	margin: auto;
+	width: 40%;
+	padding: 20vh 0;
+}
+
+
+#main h2 {
+	font-size: 6.5em;
+	margin-bottom: 1vh;
+}
+
+
+
+.simple-border {
+	border: 1px solid grey;
+	border-radius: 5px;
+}
+
+
+#randomEmote {
+	padding: 2vh;
+	font-size: 1.5em;
+}
+#randomPhrase {
+	margin: 0 auto;
+	padding: 2vh;
+	font-size: 1.3em;
+	max-width: 60vw;
+}
+
+
+#refreshButton {
+	margin: 3vh 0;
+	padding: 1vh;
+	/* border: 2px solid red; */
+	width: 30px;
+}
+
+
+#refreshButton:hover {
+
+	-webkit-animation: rotate 0.2s linear infinite;
+	-moz-animation: rotate 0.2s linear infinite;
+	-ms-animation: rotate 0.2s linear infinite;
+	-o-animation: rotate 0.2s linear infinite;
+	animation: rotate 0.2s linear infinite;
+
+}
+
+@keyframes rotate {
+	from {
+		-ms-transform: rotate(0deg);
+		-moz-transform: rotate(0deg);
+		-webkit-transform: rotate(0deg);
+		-o-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+	to {
+		-ms-transform: rotate(360deg);
+		-moz-transform: rotate(360deg);
+		-webkit-transform: rotate(360deg);
+		-o-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
+
+}
+
+
+
+
+
+
+
+
+
+#links {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100vw;
+
+	padding: 2vh;
+
+
+	display: flex;
+	flex-direction: row;
+	align-items: baseline;
+	justify-content: center;
+
+}
+
+
+
+
+#links>a {
+	padding: 0.9vh 0.6vw;
+	margin: 0 10px;
+
+	border: 2px solid transparent;
+	border-image-slice: 1;
+	border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
+
+
+	transition: border-image-source 0.7s;
+}
+
+
+#links>a:hover {
+	border-image-source: linear-gradient(to right, #743ad5, #d53a9d);
+	
+}
+
+
+
+
+
+.cursor:after {
+	position:absolute;
+	transform: translate(0,-15px);
+	content:"|";
+	font-weight:500;
+	color:var(--hex-main-color);
+	animation-name:blink;
+	animation-duration:.9s;
+	animation-iteration-count:infinite;
+	animation-timing-function:ease;
+}
+
+@keyframes blink {
+	0% {opacity:0;}
+	50% {opacity:1;}
+	100% {opacity:0}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
