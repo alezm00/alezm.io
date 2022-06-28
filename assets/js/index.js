@@ -5,6 +5,9 @@ const randomPhrase = document.querySelector('#randomPhrase')
 const refreshButton = document.querySelector('#refreshButton')
 
 
+const originalDocumentTitle = document.title
+
+
 
 // onclick="generateRandoms()"
 
@@ -19,7 +22,7 @@ function generateRandoms(){
 	let selectedRandomEmote = asciimoji[getRandomIndex(asciimoji.length)]
 	let selectedRandomPhrase = phrases[getRandomIndex(phrases.length)]
 	randomEmote.textContent = selectedRandomEmote
-	document.title = `${document.title} | ${selectedRandomEmote}`
+	document.title = `${originalDocumentTitle} | ${selectedRandomEmote}`
 
 	randomPhrase.textContent = selectedRandomPhrase
 
