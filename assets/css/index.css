@@ -48,6 +48,7 @@ img {
 }
 
 
+
 #main h2 {
 	font-size: 6.5em;
 	margin-bottom: 1vh;
@@ -123,7 +124,7 @@ img {
 	left: 0;
 	width: 100vw;
 
-	padding: 2vh;
+	padding: 2vh 0;
 
 
 	display: flex;
@@ -138,7 +139,6 @@ img {
 
 #links>a {
 	padding: 0.9vh 0.6vw;
-	margin: 0 10px;
 
 	border: 2px solid transparent;
 	border-image-slice: 1;
@@ -160,7 +160,7 @@ img {
 
 .cursor:after {
 	position:absolute;
-	transform: translate(0,-15px);
+	transform: translate(0,-10px);
 	content:"|";
 	font-weight:500;
 	color:var(--hex-main-color);
@@ -179,6 +179,26 @@ img {
 
 
 
+
+
+
+@media screen and (max-width:720px){
+	#main>div {
+		width: 90%;
+	}
+}
+
+
+@media screen and (max-width:400px){
+	#main>div {
+		width: 100%;
+	}
+	
+	#main h2 {
+		font-size: 5em;
+
+	}
+}
 
 
 
