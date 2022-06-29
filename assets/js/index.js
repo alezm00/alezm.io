@@ -11,12 +11,20 @@ const originalDocumentTitle = document.title
 
 // onclick="generateRandoms()"
 
+
+/**
+ * get a random number from 0 to length
+ * @param {number} length 
+ * @returns number
+ */
 function getRandomIndex(length) {
 	return Math.floor(Math.random() * length)
 }
 
 
-
+/**
+ * get the random data form the 2 arrays of phrases and emojies
+ */
 function generateRandoms(){
   
 	let selectedRandomEmote = asciimoji[getRandomIndex(asciimoji.length)]

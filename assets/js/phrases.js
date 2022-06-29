@@ -1,3 +1,8 @@
+
+/**
+ * thx https://www.oberlo.com/blog/motivational-quotes for the phrases (˵ ͡° ͜ʖ ͡°˵)
+ */
+
 const phrases = [
 	'“All our dreams can come true, if we have the courage to pursue them.” —Walt Disney',
 	'“The secret of getting ahead is getting started.” —Mark Twain',
