@@ -146,9 +146,6 @@ img {
 
 #links>a {
 	padding: 0.8vh 1vw;
-
-
-	margin-right: 1vw;
 	
 
 	border: 2px solid transparent;
@@ -159,7 +156,9 @@ img {
 	transition: border-image-source 0.7s;
 }
 
-
+#links>a:not(:last-child) {
+	margin-right: 1vw;
+}
 
 #links>a:hover {
 	border-image-source: linear-gradient(to right, #743ad5, #d53a9d);
