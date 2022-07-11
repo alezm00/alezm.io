@@ -24,34 +24,46 @@ function getRandomIndex(length) {
 
 /**
  * get the random data form the 2 arrays of phrases and emojies
+ * @returns {array} [randomEmote, randomPhrase]
  */
 function generateRandoms(){
   
 	let selectedRandomEmote = asciimoji[getRandomIndex(asciimoji.length)]
 	let selectedRandomPhrase = phrases[getRandomIndex(phrases.length)]
-	randomEmote.textContent = selectedRandomEmote
-	document.title = `${originalDocumentTitle} | ${selectedRandomEmote}`
 
-	randomPhrase.textContent = selectedRandomPhrase
+	return [selectedRandomEmote,selectedRandomPhrase]
+}
 
+
+/**
+ * update page title and content divs
+ * @param {array} data
+ */
+function updatePage(data){
+	document.title = `${originalDocumentTitle} | ${data[0]}`
+	
+	randomEmote.textContent = data[0]
+	randomPhrase.textContent = data[1]
 }
 
 
 
+
+
 refreshButton.addEventListener('click',(el) =>{
-	generateRandoms()
+	updatePage(generateRandoms())
 })
 
 
 
 
 
-generateRandoms()
 
 
+let data = generateRandoms()
 
 
-
+updatePage(data)
 
 
 
