@@ -36,7 +36,7 @@ body {
 	
 }
 
-H2 {
+h2 {
 	font-family: 'SteamPunkFlyer', sans-serif;
 	letter-spacing: 1rem;
 }
@@ -53,7 +53,7 @@ img {
 }
 
 .skynet {
-	width: 90%;
+	width: 90vw;
 }
 
 #main {
@@ -68,19 +68,19 @@ img {
 	text-align: center;
 	margin: auto;
 	width: 90vw;
-	padding: 5vh 0;
+	padding: 1vh 0;
 }
 
 
 
 #main h2 {
-	margin: 5vh 0;
+	margin: 2vh 0;
 	font-size: 2em;
 }
 
 
 p {
-	margin-top: 2vh;
+	margin: 2vh 0;
 	line-height: 3vh;
 	color: red;
 }
