@@ -32,11 +32,14 @@ body {
 
 	background: var(--hex-main-background);
 	color: var(--hex-main-color);
+	font-family:  sans-serif;
+	
+}
 
+H2 {
 	font-family: 'SteamPunkFlyer', sans-serif;
 	letter-spacing: 1rem;
 }
-
 .invert {
 	filter: invert(100%) sepia(41%) saturate(754%) hue-rotate(260deg) brightness(118%) contrast(106%);}
 
@@ -69,6 +72,13 @@ img {
 #main h2 {
 	margin: 5vh 0;
 	font-size: 2em;
+}
+
+
+p {
+	margin-top: 2vh;
+	line-height: 3vh;
+	color: red;
 }
 
 
