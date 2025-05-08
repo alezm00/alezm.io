@@ -1,0 +1,84 @@
+
+
+/* 
+	Hi if u came all the way down here... why?
+
+	I might be the world's worst designer in the world
+
+	but feel free to take anything u might need (i took most of it too (⌐⊙_⊙)    )
+*/
+
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+@font-face {
+	font-family: SteamPunkFlyer;
+	src: url(./Steam_Punk_Flyer.ttf);
+	font-weight: bold;
+}
+
+* {
+	--hex-main-background: #2d3436;
+	--hex-main-color: #dfe6e9;
+
+}
+
+
+
+
+body {
+
+	background: var(--hex-main-background);
+	color: var(--hex-main-color);
+
+	font-family: 'SteamPunkFlyer', sans-serif;
+	letter-spacing: 1rem;
+}
+
+.invert {
+	filter: invert(100%) sepia(41%) saturate(754%) hue-rotate(260deg) brightness(118%) contrast(106%);}
+
+img {
+	width: 30vw;
+}
+
+.logo2fast {
+	width: 20vw;
+	margin-bottom: 2vh;
+}
+
+#main {
+
+	height: 100vh;
+	overflow: hidden;
+	
+}
+
+
+#main>div {
+	text-align: center;
+	margin: auto;
+	width: 90vw;
+	padding: 5vh 0;
+}
+
+
+
+#main h2 {
+	margin: 5vh 0;
+	font-size: 2em;
+}
+
+
+
+.simple-border {
+	border: 1px solid grey;
+	border-radius: 5px;
+}
+
+
+#downloadFile:hover {
+	filter: invert(0%) sepia(100%) saturate(754%) hue-rotate(130deg) brightness(118%) contrast(106%);
+}
