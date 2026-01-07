@@ -20,15 +20,17 @@
 <body>
 
 	<div id="404" title="404" onclick="history.back()">404</div>
-	<div id="no-message" style="margin-top: 20px; font-family: sans-serif; opacity: 0.8;"></div>
+	<div id="no-message"></div>
 
+	<script src="./assets/js/data/reasons.js"></script>
 	<script>
-		fetch('https://no-as-a-service.vercel.app/api')
-			.then(response => response.json())
-			.then(data => {
-				document.getElementById('no-message').textContent = data.message;
-			})
-			.catch(err => console.error('Failed to say no:', err));
+		// Check if the array loaded correctly
+		if (typeof reasons !== 'undefined' && reasons.length > 0) {
+			document.getElementById('no-message').textContent = reasons[Math.floor(Math.random() * reasons.length)];
+		} else {
+			// Fallback if the file fails to load
+			document.getElementById('no-message').textContent = "I'd rather not say why, but it's a no.";
+		}
 	</script>
 </body>
 </html>
