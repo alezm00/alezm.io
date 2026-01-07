@@ -19,8 +19,16 @@
 </head>
 <body>
 
-	<div title="404" onclick="history.back()">404</div>
+	<div id="404" title="404" onclick="history.back()">404</div>
+	<div id="no-message" style="margin-top: 20px; font-family: sans-serif; opacity: 0.8;"></div>
 
-	
+	<script>
+		fetch('https://no-as-a-service.vercel.app/api')
+			.then(response => response.json())
+			.then(data => {
+				document.getElementById('no-message').textContent = data.message;
+			})
+			.catch(err => console.error('Failed to say no:', err));
+	</script>
 </body>
 </html>
