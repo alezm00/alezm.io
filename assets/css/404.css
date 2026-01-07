@@ -12,10 +12,9 @@ body{
   color: #8e44ad; /*#fff*/
   font-size: 96px;
   font-family: 'Fira Mono', monospace;
-
 }
 
-div#404{
+#404{
   animation: glitch 1s linear infinite;
   cursor: pointer;
   letter-spacing: -7px;
@@ -33,14 +32,14 @@ div#404{
   }
 }
 
-div#404:before,
-div#404:after{
+#404:before,
+#404:after{
   content: attr(title);
   position: absolute;
   left: 0;
 }
 
-div#404:before{
+#404:before{
   animation: glitchTop 1s linear infinite;
   clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
   -webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
@@ -68,13 +67,13 @@ div#no-message {
   }
 }
 
-div:after{
-  animation: glitchBotom 1.5s linear infinite;
+#404:after{
+  animation: glitchBottom 1.5s linear infinite;
   clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
   -webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
 }
 
-@keyframes glitchBotom{
+@keyframes glitchBottom{
   2%,64%{
     transform: translate(-2px,0);
   }
