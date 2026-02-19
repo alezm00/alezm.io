@@ -25,6 +25,8 @@
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
+            flex-direction: column;
+            gap: 50px;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -87,6 +89,15 @@
             display: none;
             line-height: 1.5;
         }
+
+        #resultFD {
+            margin-top: 2rem;
+            padding: 1.2rem;
+            border-radius: 8px;
+            display: none;
+            line-height: 1.5;
+        }
+
         .success { 
             background-color: #1b3320; 
             color: #81c784; 
@@ -120,6 +131,17 @@
     <div id="result"></div>
 </div>
 
+<div class="container">
+    <h2>Codici FD</h2>
+    <p>Inserisci il codice FD (es: 437, 560, 1A2):</p>
+    <input type="text" id="fdInput" maxlength="3" placeholder="Es. 437">
+    <button onclick="decodeFD()">Traduci</button>
+    
+    <div id="resultFD"></div>
+</div>
+
+
+
 <script>
     function generaLink() {
         const inputField = document.getElementById('targaInput');
@@ -143,13 +165,72 @@
             resultDiv.innerHTML = "<strong>⚠ Errore:</strong> Il codice deve essere di 16 caratteri (es. 06BD529A822E2B20).";
         }
     }
+</script>
 
-    // Permette di premere Invio per confermare
-    document.getElementById('targaInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            generaLink();
+
+<script>
+    function decodeFD() {
+        const code = document.getElementById('fdInput').value.toUpperCase();
+        const resultDivFD = document.getElementById('resultFD');
+        const mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+        if (code.length !== 3) {
+            resultDivFD.innerHTML = "<strong>⚠ Errore:</strong> Inserisci 3 caratteri!";
+            resultDivFD.style.display = "block";
+            resultDivFD.className = "error";
+            return;
         }
-    });
+
+        let annoSuffix = code[0];
+        let suffix = code.substring(1);
+        let meseIndex = -1;
+        let annoDecennio = "";
+
+        // Logica Epoche
+        if (!isNaN(suffix)) {
+            let numSuffix = parseInt(suffix);
+            
+            // 2020 - 2029
+            if ((numSuffix >= 37 && numSuffix <= 40) || (numSuffix >= 73 && numSuffix <= 80)) {
+                annoDecennio = "202";
+                meseIndex = (numSuffix <= 40) ? numSuffix - 37 : numSuffix - 73 + 4;
+            } 
+            // 2014 - 2019
+            else if ((numSuffix >= 17 && numSuffix <= 20) || (numSuffix >= 53 && numSuffix <= 60)) {
+                annoDecennio = "201";
+                meseIndex = (numSuffix <= 20) ? numSuffix - 17 : numSuffix - 53 + 4;
+            }
+            // 2010 - 2013 
+            else if (numSuffix >= 1 && numSuffix <= 12) {
+                annoDecennio = "201";
+                meseIndex = numSuffix - 1;
+            }
+            // 2009
+            else if (numSuffix >= 81 && numSuffix <= 92) {
+                annoDecennio = "200";
+                meseIndex = numSuffix - 81;
+            }
+        } else {
+            // Epoca Alfanumerica (2030-2059)
+            let letter = suffix[0];
+            let hexMonth = suffix[1];
+            
+            if (letter === 'A') annoDecennio = "203";
+            else if (letter === 'B') annoDecennio = "204";
+            else if (letter === 'C') annoDecennio = "205";
+            
+            meseIndex = parseInt(hexMonth, 16) - 1;
+        }
+
+        if (meseIndex >= 0 && meseIndex < 12 && annoDecennio !== "") {
+            resultDivFD.innerHTML = mesi[meseIndex] + " " + annoDecennio + annoSuffix;
+            resultDivFD.className = "success";
+            resultDivFD.style.display = "block";
+        } else {
+            resultDivFD.innerHTML = "Codice non riconosciuto";
+            resultDivFD.style.display = "block";
+            resultDivFD.className = "error";
+        }
+    }
 </script>
 
 </body>
