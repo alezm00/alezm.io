@@ -26,7 +26,7 @@
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
-            gap: 50px;
+            gap: 30px;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -44,6 +44,13 @@
             text-align: center;
             border: 1px solid #333;
         }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                max-width: 60vw;
+            }
+        }
+
         h2 { color: #ffffff; margin-bottom: 0.5rem; }
         p { color: #b0b0b0; margin-bottom: 2rem; font-size: 0.9rem; }
         
@@ -132,7 +139,7 @@
 </div>
 
 <div class="container">
-    <h2>Codici FD</h2>
+    <h2>Codici FD Bosch</h2>
     <p>Inserisci il codice FD (es: 437, 560, 1A2):</p>
     <input type="text" id="fdInput" maxlength="3" placeholder="Es. 437">
     <button onclick="decodeFD()">Traduci</button>
