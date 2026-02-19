@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cerca Targa UCIT</title>
+    <style>
+        /* Stili per il tema scuro */
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #121212; /* Sfondo scuro profondo */
+            color: #e0e0e0;
+        }
+        .container {
+            background: #1e1e1e; /* Grigio leggermente più chiaro per la card */
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        h2 { color: #ffffff; margin-bottom: 0.5rem; }
+        p { color: #b0b0b0; margin-bottom: 2rem; font-size: 0.9rem; }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 1.5rem;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background-color: #252525;
+            color: #00ffcc; /* Testo color neon per leggibilità */
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            box-sizing: border-box;
+            text-transform: uppercase;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.1s;
+        }
+        button:hover { background-color: #0056b3; }
+        button:active { transform: scale(0.98); }
+
+        #result {
+            margin-top: 2rem;
+            padding: 1.2rem;
+            border-radius: 8px;
+            display: none;
+            line-height: 1.5;
+        }
+        .success { 
+            background-color: #1b3320; 
+            color: #81c784; 
+            border: 1px solid #2e7d32; 
+        }
+        .error { 
+            background-color: #331b1b; 
+            color: #e57373; 
+            border: 1px solid #c62828; 
+        }
+        a { 
+            color: #4dabf5; 
+            font-weight: bold; 
+            text-decoration: none; 
+            display: inline-block;
+            margin-top: 10px;
+            border-bottom: 1px solid #4dabf5;
+        }
+        a:hover { color: #90caf9; border-bottom-color: #90caf9; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Verifica Targa UCIT</h2>
+    <p>Inserisci il codice alfanumerico di 16 caratteri</p>
+    
+    <input type="text" id="targaInput" placeholder="06BD529A822E2B20" maxlength="16" autocomplete="off">
+    <button onclick="generaLink()">Genera Link Portale</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    function generaLink() {
+        const inputField = document.getElementById('targaInput');
+        const input = inputField.value.trim().toUpperCase();
+        const resultDiv = document.getElementById('result');
+        
+        // Verifica formato: 16 caratteri (lettere e numeri)
+        const regex = /^[A-Z0-9]{16}$/;
+
+        if (regex.test(input)) {
+            const baseUrl = "https://www.ucit.fvg.it/iter-portal/plants-filter";
+            const fullUrl = `${baseUrl}?targa=${input}&caller=login-semplificato`;
+            
+            resultDiv.className = "success";
+            resultDiv.style.display = "block";
+            resultDiv.innerHTML = `<strong>✓ Formato Corretto</strong><br>` +
+                                `<a href="${fullUrl}" target="_blank">Vai alla targa ${input} →</a>`;
+        } else {
+            resultDiv.className = "error";
+            resultDiv.style.display = "block";
+            resultDiv.innerHTML = "<strong>⚠ Errore:</strong> Il codice deve essere di 16 caratteri (es. 06BD529A822E2B20).";
+        }
+    }
+
+    // Permette di premere Invio per confermare
+    document.getElementById('targaInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            generaLink();
+        }
+    });
+</script>
+
+</body>
+</html>
