@@ -1,0 +1,24 @@
+{
+  "short_name": "ZUcit",
+  "name": "Cerca Targa UCIT",
+  "description": "Genera un link di collegamento a una pagina per cercare una targa impianto nel portale FVG Energia",
+  "icons": [
+    {
+      "src": "img/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "img/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#1E1E1E",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#000000",
+  "orientation": "portrait"
+}
