@@ -124,13 +124,31 @@
             border-bottom: 1px solid #4dabf5;
         }
         a:hover { color: #90caf9; border-bottom-color: #90caf9; }
+
+        .scan-row { display: flex; gap: 10px; margin-bottom: 1.2rem; }
+        .scan-row button { background-color: #2a2a2a; border: 2px solid #007bff; font-size: 0.95rem; padding: 12px 6px; }
+        .scan-row button:hover { background-color: #333; }
+        .scan-row button:disabled { opacity: 0.5; cursor: wait; }
+        #scanStatus { display: none; margin-bottom: 1.2rem; font-size: 0.85rem; color: #b0b0b0; }
+        #scanPreview { display: none; max-width: 100%; max-height: 140px; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #333; }
+        .warn { background-color: #33301b; color: #e5d273; border: 1px solid #c6a928; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Verifica Targa UCIT</h2>
-    <p>Inserisci il codice alfanumerico di 16 caratteri</p>
+    <p>Inquadra la targa impianto con la fotocamera (avvicinati e tieni l'adesivo dritto), carica una foto, oppure inserisci a mano il codice di 16 caratteri</p>
+
+    <div class="scan-row">
+        <button type="button" id="btnCamera">📷 Scatta foto</button>
+        <button type="button" id="btnUpload">🖼 Carica foto</button>
+    </div>
+    <!-- capture="environment" apre direttamente la fotocamera posteriore su Android -->
+    <input type="file" id="fileCamera" accept="image/*" capture="environment" hidden>
+    <input type="file" id="fileUpload" accept="image/*" hidden>
+    <img id="scanPreview" alt="Anteprima foto">
+    <div id="scanStatus"></div>
     
     <input type="text" id="targaInput" placeholder="06BD529A822E2B20" maxlength="16" autocomplete="off">
     <button onclick="generaLink()">Genera Link Portale</button>
@@ -148,6 +166,179 @@
 </div>
 
 
+
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script>
+    // ---- Lettura del codice dalla foto dell'adesivo (OCR) ----
+    const ALNUM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const HEX = '0123456789ABCDEF';
+    let ocrWorker = null;
+
+    async function getWorker() {
+        if (!ocrWorker) ocrWorker = await Tesseract.createWorker('eng');
+        return ocrWorker;
+    }
+
+    async function ocr(worker, image, whitelist, psm) {
+        await worker.setParameters({
+            tessedit_char_whitelist: whitelist,
+            tessedit_pageseg_mode: psm
+        });
+        const { data } = await worker.recognize(image);
+        return data;
+    }
+
+    function setStatus(msg, cls) {
+        const el = document.getElementById('scanStatus');
+        el.style.display = msg ? 'block' : 'none';
+        el.className = cls || '';
+        el.innerHTML = msg;
+    }
+
+    // Ridimensiona e porta in scala di grigi con contrasto aumentato
+    async function prepareImage(file, width) {
+        const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+        const scale = Math.min(1, width / bmp.width);
+        const c = document.createElement('canvas');
+        c.width = Math.round(bmp.width * scale);
+        c.height = Math.round(bmp.height * scale);
+        const ctx = c.getContext('2d');
+        ctx.drawImage(bmp, 0, 0, c.width, c.height);
+        const img = ctx.getImageData(0, 0, c.width, c.height);
+        const d = img.data;
+        let min = 255, max = 0;
+        for (let i = 0; i < d.length; i += 4) {
+            const g = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+            d[i] = g; if (g < min) min = g; if (g > max) max = g;
+        }
+        const range = Math.max(1, max - min);
+        for (let i = 0; i < d.length; i += 4) {
+            d[i] = d[i+1] = d[i+2] = (d[i] - min) * 255 / range;
+        }
+        ctx.putImageData(img, 0, 0);
+        return c;
+    }
+
+    function cropCanvas(src, x, y, w, h, outWidth) {
+        x = Math.max(0, Math.round(x)); y = Math.max(0, Math.round(y));
+        w = Math.min(src.width - x, Math.round(w)); h = Math.min(src.height - y, Math.round(h));
+        const c = document.createElement('canvas');
+        c.width = outWidth; c.height = Math.max(1, Math.round(h * outWidth / w));
+        c.getContext('2d').drawImage(src, x, y, w, h, 0, 0, c.width, c.height);
+        return c;
+    }
+
+    // Da un testo OCR (solo 0-9 A-F) ricava i codici candidati di 16 caratteri.
+    // Ricostruisce anche il prefisso "06" quando il ritaglio lo ha tagliato.
+    function hexCandidates(text) {
+        const out = [];
+        for (const line of text.toUpperCase().split(/\n/)) {
+            const t = line.replace(/[^0-9A-F]/g, '');
+            if (t.length === 16) out.push({ code: t, full: true });
+            else if (t.length === 15 && t[0] === '6') out.push({ code: '0' + t, full: false });
+            else if (t.length === 14) out.push({ code: '06' + t, full: false });
+            else if (t.length > 16) {
+                const i = t.indexOf('06');
+                if (i >= 0 && i + 16 <= t.length) out.push({ code: t.substr(i, 16), full: true });
+            }
+        }
+        return out;
+    }
+
+    // Sceglie il candidato più votato; vale di più se inizia con 06 ed è stato letto per intero
+    function pickBest(votes) {
+        let best = null;
+        for (const [code, v] of Object.entries(votes)) {
+            const score = v.n + (code.startsWith('06') ? 2 : 0) + (v.full ? 1 : 0);
+            if (!best || score > best.score) best = { code, score, n: v.n };
+        }
+        return best;
+    }
+
+    async function findCode(file) {
+        const worker = await getWorker();
+        const votes = {};
+        const add = text => hexCandidates(text).forEach(c => {
+            const v = votes[c.code] || (votes[c.code] = { n: 0, full: false });
+            v.n++; v.full = v.full || c.full;
+        });
+
+        // 1) Cerca l'etichetta "Targa impianto" per localizzare la riga del codice
+        let label = null, base = null;
+        for (const width of [2000, 3000]) {
+            base = await prepareImage(file, width);
+            const data = await ocr(worker, base, ALNUM, '11');
+            const words = data.words || [];
+            label = words.filter(w => /^(IMPIANTO|TARGA)/i.test(w.text.replace(/[^A-Za-z]/g, '')))
+                         .sort((a, b) => /^IMPIANTO/i.test(b.text) - /^IMPIANTO/i.test(a.text))[0];
+            if (label) break;
+        }
+
+        if (label) {
+            const bb = label.bbox, lw = bb.x1 - bb.x0, h = bb.y1 - bb.y0;
+            // Il codice è nel riquadro subito sotto l'etichetta: più ritagli con margini diversi
+            const variants = [[1.3, 4, 3.2], [0.8, 2.8, 2.6], [1.8, 5, 4]];
+            for (const [l, w, hh] of variants) {
+                const crop = cropCanvas(base, bb.x0 - l * lw, bb.y1 - 0.3 * h, lw * w, h * hh, 1400);
+                add((await ocr(worker, crop, HEX, '6')).text);
+                const best = pickBest(votes);
+                if (best && best.n >= 2) break;
+            }
+        }
+        // 2) Se non basta: lettura dell'intera foto con soli caratteri esadecimali
+        if (!pickBest(votes)) {
+            add((await ocr(worker, base || await prepareImage(file, 2400), HEX, '11')).text);
+        }
+        return pickBest(votes);
+    }
+
+    async function readStickerFromFile(file) {
+        if (!file) return;
+        if (typeof Tesseract === 'undefined') {
+            setStatus('⚠ Libreria OCR non caricata: serve connessione internet.', 'error');
+            return;
+        }
+        const preview = document.getElementById('scanPreview');
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+        document.getElementById('btnCamera').disabled = true;
+        document.getElementById('btnUpload').disabled = true;
+        document.getElementById('result').style.display = 'none';
+
+        try {
+            setStatus('⏳ Lettura della foto in corso…');
+            const found = await findCode(file);
+            if (found) {
+                document.getElementById('targaInput').value = found.code;
+                generaLink();
+                const sure = found.code.startsWith('06');
+                setStatus(sure
+                    ? '✓ Codice letto dalla foto. Controlla comunque che coincida con l\'adesivo.'
+                    : '⚠ Lettura incerta: confronta il codice con l\'adesivo e correggilo se serve.',
+                    sure ? 'success' : 'warn');
+            } else {
+                setStatus('⚠ Codice non trovato. Avvicinati all\'adesivo, tienilo dritto e riprova, oppure scrivilo a mano.', 'error');
+            }
+        } catch (e) {
+            console.error(e);
+            setStatus('⚠ Errore nella lettura della foto: ' + (e.message || e), 'error');
+        } finally {
+            document.getElementById('btnCamera').disabled = false;
+            document.getElementById('btnUpload').disabled = false;
+        }
+    }
+
+    const fileCamera = document.getElementById('fileCamera');
+    const fileUpload = document.getElementById('fileUpload');
+    document.getElementById('btnCamera').addEventListener('click', () => fileCamera.click());
+    document.getElementById('btnUpload').addEventListener('click', () => fileUpload.click());
+    [fileCamera, fileUpload].forEach(inp => inp.addEventListener('change', () => {
+        const f = inp.files[0];
+        inp.value = ''; // permette di riselezionare la stessa foto
+        readStickerFromFile(f);
+    }));
+</script>
 
 <script>
     function generaLink() {
